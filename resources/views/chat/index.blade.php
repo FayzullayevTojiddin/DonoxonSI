@@ -53,7 +53,7 @@
       transition: background 0.3s ease, color 0.3s ease;
     }
     .container{
-      min-height:100dvh;
+      min-height:100svh;
       display:flex;
       flex-direction:column;
       max-width:1400px;
@@ -433,7 +433,7 @@
     }
     
     .chat-container{
-      flex:1;
+      flex: 1 1 auto;
       display:flex;
       flex-direction:column;
       overflow:hidden;
@@ -442,7 +442,7 @@
     }
     
     .messages{
-      flex:1;
+      flex: 1 1 auto;
       padding:24px;
       padding-bottom:20px;
       overflow-y:auto;
@@ -452,8 +452,8 @@
       gap:16px;
       scroll-behavior: smooth;
 
-      min-height:0;                     /* MUHIM */
-      -webkit-overflow-scrolling: touch; /* iPhone */
+      min-height:0;
+      -webkit-overflow-scrolling: touch;
     }
 
     .messages::-webkit-scrollbar{width:8px}
@@ -530,7 +530,7 @@
       border-top:1px solid var(--border);
       box-shadow:0 -2px 8px var(--shadow);
       flex-shrink:0;
-      position: sticky;
+      position: relative;
       bottom: 0;
       z-index: 50;
       padding-bottom: calc(20px + env(safe-area-inset-bottom));
@@ -646,6 +646,25 @@
       height:22px;
       stroke: var(--text-primary);
     }
+
+    .about-badge{
+      position:relative;
+      background:#0f172a;
+      border:1px solid var(--accent-secondary);
+    }
+
+    .about-badge::after{
+      content:"ABOUT";
+      position:absolute;
+      bottom:-6px;
+      right:-6px;
+      background: var(--accent-secondary);
+      color:#000;
+      font-size:9px;
+      font-weight:700;
+      padding:2px 6px;
+      border-radius:6px;
+    }
   </style>
 </head>
 <body>
@@ -744,7 +763,7 @@
         </svg>
       </button>
 
-      <button class="about-btn" id="aboutBtn" aria-label="About">
+      <button class="about-btn about-badge" id="aboutBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="9"/>
           <line x1="12" y1="11" x2="12" y2="16"/>
