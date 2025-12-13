@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use App\Enums\RequestType;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Support\Facades\RateLimiter;
 
 class ChatController extends Controller
 {
@@ -40,6 +41,20 @@ class ChatController extends Controller
 
     public function submitRequest(Request $request)
     {
+        $key = 'submit-request:' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 10)) {
+
+            $seconds = RateLimiter::availableIn($key);
+
+            return response()->json([
+                'status'  => 'blocked',
+                'message' => "Siz juda ko‘p xabar yubordingiz. Iltimos " .
+                            ceil($seconds / 60) . " daqiqadan keyin urinib ko‘ring.",
+            ], 429);
+        }
+        RateLimiter::hit($key, 300);
+
         try {
             $validated = $request->validate([
                 'full_name'    => 'required|string|max:255',
