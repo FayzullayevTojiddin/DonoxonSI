@@ -1045,6 +1045,36 @@
   aboutBtn.addEventListener('click', () => {
     window.location.href = '/about';
   });
+
+  function appendAI(text){
+    const w = document.createElement('div');
+    w.className = "msg ai";
+    w.innerHTML = `<div class="bubble">${esc(text)}</div>`;
+    messagesEl.appendChild(w);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  window.addEventListener('load', () => {
+    if (!sessionStorage.getItem('welcome_shown')) {
+      appendAI(
+  `Assalomu alaykum 👋
+
+  Men DonoxonSI — Uzun tumani bo‘yicha sun’iy intellekt yordamchiman.
+
+  📌 Siz:
+  • hokimiyat
+  • tashkilotlar
+  • xizmatlar
+  • murojaatlar
+
+  bo‘yicha savol berishingiz mumkin.
+
+  Savolingizni yozing 🙂`
+      );
+
+      sessionStorage.setItem('welcome_shown', '1');
+    }
+  });
 </script>
 </body>
 </html>
