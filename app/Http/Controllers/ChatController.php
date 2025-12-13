@@ -138,23 +138,6 @@ class ChatController extends Controller
                 return $item?->value ?? "Kechirasiz, ma'lumot topilmadi.";
             }
 
-            $salomOnlyPatterns = [
-                'salom',
-                'assalomu alaykum',
-                'assalomu',
-                'hello',
-                'hi',
-                'hayr'
-            ];
-
-            if (in_array($question, $salomOnlyPatterns, true)) {
-                $salomIntent = Data::where('key', 'Salom')->first();
-                if ($salomIntent) {
-                    Cache::put($cacheKey, $salomIntent->id, now()->addDays(7));
-                    return $salomIntent->value;
-                }
-            }
-
             $intents = Data::where('status', true)->get(['id', 'key', 'value']);
             if ($intents->isEmpty()) {
                 return "Kechirasiz, hozircha ma'lumotlar mavjud emas.";
