@@ -9,6 +9,9 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Schemas\Components\Section;
 
 class RequestsTable
 {
@@ -74,11 +77,33 @@ class RequestsTable
                     ->label("Ko'rish")
                     ->icon('heroicon-o-eye')
                     ->modalWidth('3xl')
+                    ->infolist([
+                        TextEntry::make('full_name')
+                            ->label("F.I.Sh"),
+
+                        TextEntry::make('request')
+                            ->label("So'rov")
+                            ->columnSpanFull(),
+
+                        IconEntry::make('readed')
+                            ->label("O'qilgan"),
+
+                        Section::make("Yuborilgan ma'lumotlar")
+                            ->schema([
+                                TextEntry::make('details_from.ip')
+                                    ->label("IP manzil"),
+
+                                TextEntry::make('details_from.submitted_at')
+                                    ->label("Yuborilgan vaqt"),
+
+                                TextEntry::make('details_from.user_agent')
+                                    ->label("Brauzer ma'lumoti")
+                                    ->columnSpanFull(),
+                            ]),
+                    ])
                     ->mountUsing(function ($record) {
                         if (! $record->readed) {
-                            $record->update([
-                                'readed' => true,
-                            ]);
+                            $record->update(['readed' => true]);
                         }
                     }),
             ])
