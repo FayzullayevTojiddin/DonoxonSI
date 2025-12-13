@@ -222,10 +222,12 @@ class ChatController extends Controller
     "VAZIFA: Foydalanuvchi savolini tahlil qiling va ENG MOS intentni aniqlang.
 
     MUHIM QOIDALAR:
-    1️⃣ SALOMLASHUV so'zlari (salom, assalomu alaykum, hayr, qalaysan, ishlar qalaysiz) → DOIMO \"Salom\" intentini tanlang agarda umuman mavjud bo'lmagan intent bo'lsa unda Javob topilmaganda intetini tanlang
-    2️⃣ Uzun tumani bilan bog'liq savollar → mos intentni tanlang  
-    3️⃣ Boshqa tuman/shahar savollari (Termiz, Toshkent) → id = null
-    4️⃣ So'z emas, SAVOL MA'NOSI muhim!
+    1️⃣ Agar savolda FAQAT salomlashuv bo‘lsa → 'Salom' intent
+    2️⃣ Agar salom + real savol bo‘lsa → salomni inkor qil, savolni tahlil qil
+    3️⃣ Uzun tumani bilan bog‘liq savollar → mos intent
+    4️⃣ Boshqa tuman/shahar → id = null
+    5️⃣ Hech qaysi intent ma’nosiga mos kelmasa → Javob topilmadi intent
+    6️⃣ So‘z emas, SAVOL MA’NOSI muhim
 
     FOYDALANUVCHI SAVOLI:
     \"{$text}\"
