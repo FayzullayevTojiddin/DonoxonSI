@@ -40,7 +40,12 @@
       --border: rgba(0,0,0,0.1);
       --shadow: rgba(0,0,0,0.1);
     }
-    html,body{height:100%;overflow:hidden}
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
     body{
       background: var(--bg-primary);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Arial, sans-serif;
@@ -48,7 +53,7 @@
       transition: background 0.3s ease, color 0.3s ease;
     }
     .container{
-      height:100vh;
+      min-height:100dvh;
       display:flex;
       flex-direction:column;
       max-width:1400px;
@@ -435,6 +440,7 @@
       background: var(--bg-primary);
       min-height:0;
     }
+    
     .messages{
       flex:1;
       padding:24px;
@@ -445,7 +451,11 @@
       flex-direction:column;
       gap:16px;
       scroll-behavior: smooth;
+
+      min-height:0;                     /* MUHIM */
+      -webkit-overflow-scrolling: touch; /* iPhone */
     }
+
     .messages::-webkit-scrollbar{width:8px}
     .messages::-webkit-scrollbar-track{background:transparent}
     .messages::-webkit-scrollbar-thumb{
@@ -520,6 +530,10 @@
       border-top:1px solid var(--border);
       box-shadow:0 -2px 8px var(--shadow);
       flex-shrink:0;
+      position: sticky;
+      bottom: 0;
+      z-index: 50;
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
     }
     .input-wrapper{
       flex:1;
