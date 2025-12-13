@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use Filament\Pages\Dashboard as BaseDashboard;
 use UnitEnum;
+use App\Enums\UserRole;
 
 class Dashboard extends BaseDashboard
 {
@@ -15,9 +16,16 @@ class Dashboard extends BaseDashboard
 
     public function getWidgets(): array
     {
-        return [
+        $widgets = [
             \App\Filament\Widgets\StatsOverview::class,
-            \App\Filament\Widgets\LatestRequests::class,
         ];
+
+        $user = auth()->user();
+
+        if ($user && $user->role?->value === UserRole::SUPER_ADMIN->value) {
+            $widgets[] = \App\Filament\Widgets\LatestRequests::class;
+        }
+
+        return $widgets;
     }
 }

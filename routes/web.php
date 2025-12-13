@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
 Route::post('/chat/message', [ChatController::class, 'message'])->name('chat.message');
 Route::post('/chat/submit-request', [ChatController::class, 'submitRequest'])->name('chat.submitRequest');
+Route::view('/about', 'about')->name('about');
 
 Route::get('/', function () {
     return view('chat.index');

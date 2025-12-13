@@ -609,6 +609,29 @@
       .modal{padding:20px}
       .composer{padding:12px}
     }
+    .about-btn{
+      width:48px;
+      height:48px;
+      border-radius:12px;
+      background: var(--bg-input);
+      border:1px solid var(--border);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:all 0.3s ease;
+    }
+
+    .about-btn:hover{
+      transform:scale(1.05);
+      box-shadow:0 4px 12px var(--shadow);
+    }
+
+    .about-btn svg{
+      width:22px;
+      height:22px;
+      stroke: var(--text-primary);
+    }
   </style>
 </head>
 <body>
@@ -704,6 +727,14 @@
       <button class="request-btn" id="openRequestBtn" aria-label="Murojaat qoldirish">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+        </svg>
+      </button>
+
+      <button class="about-btn" id="aboutBtn" aria-label="About">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9"/>
+          <line x1="12" y1="11" x2="12" y2="16"/>
+          <circle cx="12" cy="8" r="1"/>
         </svg>
       </button>
       
@@ -975,6 +1006,12 @@
   
   sendBtn.onclick = send;
   input.addEventListener("keydown", e => e.key === "Enter" && send());
+
+  const aboutBtn = document.getElementById('aboutBtn');
+
+  aboutBtn.addEventListener('click', () => {
+    window.location.href = '/about';
+  });
 </script>
 </body>
 </html>

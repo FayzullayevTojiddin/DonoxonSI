@@ -9,6 +9,7 @@ use App\Filament\Resources\Data\Schemas\DataForm;
 use App\Filament\Resources\Data\Tables\DataTable;
 use App\Models\Data;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -25,6 +26,8 @@ class DataResource extends Resource
     protected static ?string $model = Data::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::CodeBracketSquare;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Tizim';
 
     protected static ?int $navigationSort = 1;
 
