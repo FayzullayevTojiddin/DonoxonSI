@@ -163,10 +163,31 @@
 
         <div class="links">
 
-            <a href="https://uzun.uz" target="_blank" class="link-card">
-                <div class="link-title">Uzun tumani rasmiy sayti</div>
+            <a href="https://www.facebook.com/uzunaxborotxizmati/" target="_blank" class="link-card">
+                <div class="link-title">Facebook</div>
                 <div class="link-desc">
-                    Tuman faoliyati va yangiliklar
+                    Uzun tumani rasmiy Facebook sahifasi
+                </div>
+            </a>
+
+            <a href="https://www.instagram.com/uzuntumanhokimligi/" target="_blank" class="link-card">
+                <div class="link-title">Instagramm</div>
+                <div class="link-desc">
+                    Uzun tumani rasmiy Instagram sahifasi
+                </div>
+            </a>
+
+            <a href="https://www.youtube.com/channel/UCaZlT5GpeEMu6y0Z6FGR01g" target="_blank" class="link-card">
+                <div class="link-title">YouTube</div>
+                <div class="link-desc">
+                    Uzun tumani rasmiy YouTube sahifasi
+                </div>
+            </a>
+
+            <a href="https://gov.uz/uzun" target="_blank" class="link-card">
+                <div class="link-title">Web Sahifa</div>
+                <div class="link-desc">
+                    Uzun tumani rasmiy Web sahifasi
                 </div>
             </a>
 
@@ -174,13 +195,6 @@
                 <div class="link-title">Uzun tuman Telegram kanali</div>
                 <div class="link-desc">
                     Tuman faoliyati va yangiliklar
-                </div>
-            </a>
-
-            <a href="https://gov.uz" target="_blank" class="link-card">
-                <div class="link-title">Hukumat portali</div>
-                <div class="link-desc">
-                    Davlat xizmatlari va rasmiy ma’lumotlar
                 </div>
             </a>
         </div>
