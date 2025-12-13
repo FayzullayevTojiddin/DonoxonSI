@@ -131,7 +131,6 @@ class ChatController extends Controller
             $question = trim(mb_strtolower($text));
             $cacheKey = 'intent_answer_' . md5($question);
 
-            // Cache tekshirish
             if (Cache::has($cacheKey)) {
                 $cachedId = Cache::get($cacheKey);
                 $item = Data::find($cachedId);
@@ -247,7 +246,6 @@ INTENTLAR RO‘YXATI:
     $intents->map(fn ($i) => [
         'id' => $i->id,
         'key' => $i->key,
-        'tavsif' => mb_substr($i->value, 0, 160)
     ])->toArray(),
     JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
 )."
