@@ -138,14 +138,20 @@ class ChatController extends Controller
                 return $item?->value ?? "Kechirasiz, ma'lumot topilmadi.";
             }
 
-            $salomPatterns = ['salom', 'assalomu', 'hayr', 'qalaysan', 'qalaysiz', 'hello', 'hi'];
-            foreach ($salomPatterns as $pattern) {
-                if (str_contains($question, $pattern)) {
-                    $salomIntent = Data::where('key', 'Salom')->first();
-                    if ($salomIntent) {
-                        Cache::forever($cacheKey, $salomIntent->id);
-                        return $salomIntent->value;
-                    }
+            $salomOnlyPatterns = [
+                'salom',
+                'assalomu alaykum',
+                'assalomu',
+                'hello',
+                'hi',
+                'hayr'
+            ];
+
+            if (in_array($question, $salomOnlyPatterns, true)) {
+                $salomIntent = Data::where('key', 'Salom')->first();
+                if ($salomIntent) {
+                    Cache::put($cacheKey, $salomIntent->id, now()->addDays(7));
+                    return $salomIntent->value;
                 }
             }
 

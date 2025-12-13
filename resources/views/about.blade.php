@@ -170,7 +170,7 @@
                 </div>
             </a>
 
-            <a href="https://@uzun_ax_x" target="_blank" class="link-card">
+            <a href="https://t.me/uzun_ax_x" target="_blank" class="link-card">
                 <div class="link-title">Uzun tuman Telegram kanali</div>
                 <div class="link-desc">
                     Tuman faoliyati va yangiliklar
@@ -183,14 +183,6 @@
                     Davlat xizmatlari va rasmiy ma’lumotlar
                 </div>
             </a>
-
-            <a href="mailto:info@donoxonsi.uz" class="link-card">
-                <div class="link-title">Bog‘lanish</div>
-                <div class="link-desc">
-                    info@donoxonsi.uz
-                </div>
-            </a>
-
         </div>
     </div>
 
