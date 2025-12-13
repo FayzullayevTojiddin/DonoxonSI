@@ -138,7 +138,6 @@ class ChatController extends Controller
                 return $item?->value ?? "Kechirasiz, ma'lumot topilmadi.";
             }
 
-            // TEZKOR SALOM TEKSHIRUVI (AI ga yubormasdan)
             $salomPatterns = ['salom', 'assalomu', 'hayr', 'qalaysan', 'qalaysiz', 'hello', 'hi'];
             foreach ($salomPatterns as $pattern) {
                 if (str_contains($question, $pattern)) {
@@ -155,7 +154,6 @@ class ChatController extends Controller
                 return "Kechirasiz, hozircha ma'lumotlar mavjud emas.";
             }
 
-            // AI ga so'rov
             $prompt = $this->buildPrompt($text, $intents);
             
             $response = Http::timeout(10)
@@ -199,7 +197,7 @@ class ChatController extends Controller
                 return "Men faqat Uzun tumani doirasidagi savollarga javob bera olaman.";
             }
 
-            if ($confidence < 0.35) { // 0.40 dan 0.35 ga tushirildi
+            if ($confidence < 0.35) {
                 return "Kechirasiz, aniq ma'lumot topilmadi.";
             }
 
@@ -208,7 +206,7 @@ class ChatController extends Controller
                 return "Kechirasiz, ma'lumot topilmadi.";
             }
 
-            Cache::put($cacheKey, $intentId, now()->addDays(7)); // forever emas, 7 kun
+            Cache::put($cacheKey, $intentId, now()->addDays(7));
 
             return $item->value;
 
@@ -224,7 +222,7 @@ class ChatController extends Controller
     "VAZIFA: Foydalanuvchi savolini tahlil qiling va ENG MOS intentni aniqlang.
 
     MUHIM QOIDALAR:
-    1️⃣ SALOMLASHUV so'zlari (salom, assalomu alaykum, hayr, qalaysan, ishlar qalaysiz) → DOIMO \"Salom\" intentini tanlang
+    1️⃣ SALOMLASHUV so'zlari (salom, assalomu alaykum, hayr, qalaysan, ishlar qalaysiz) → DOIMO \"Salom\" intentini tanlang agarda umuman mavjud bo'lmagan intent bo'lsa unda Javob topilmaganda intetini tanlang
     2️⃣ Uzun tumani bilan bog'liq savollar → mos intentni tanlang  
     3️⃣ Boshqa tuman/shahar savollari (Termiz, Toshkent) → id = null
     4️⃣ So'z emas, SAVOL MA'NOSI muhim!
