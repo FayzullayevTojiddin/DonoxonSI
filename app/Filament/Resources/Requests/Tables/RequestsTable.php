@@ -12,6 +12,7 @@ use Filament\Tables\Table;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Schemas\Components\Section;
+use App\Enums\UserRole;
 
 class RequestsTable
 {
@@ -24,6 +25,16 @@ class RequestsTable
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
+
+                TextColumn::make('where')
+                    ->formatStateUsing(fn (string $state): string =>
+                        UserRole::tryFrom($state)?->label() ?? $state
+                    )
+                    ->label('Kimga')
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color('warning'),
 
                 TextColumn::make('request')
                     ->label("So'rov matni")
@@ -93,10 +104,13 @@ class RequestsTable
                         Section::make("Yuborilgan ma’lumotlar")
                             ->schema([
 
-                                TextEntry::make('details_from.organization_label')
-                                    ->label("Tashkilot bo‘limi")
+                                TextEntry::make('where')
+                                    ->label('Kimga')
                                     ->badge()
-                                    ->color('warning'),
+                                    ->color('warning')
+                                    ->formatStateUsing(fn (string $state): string =>
+                                        UserRole::tryFrom($state)?->label() ?? $state
+                                    ),
 
                                 TextEntry::make('details_from.phone_number')
                                     ->label("Telefon raqam"),

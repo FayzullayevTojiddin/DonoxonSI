@@ -3,12 +3,15 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Dashboard as BaseDashboard;
+use UnitEnum;
 
 class Dashboard extends BaseDashboard
 {
-    protected static ?string $navigationLabel = 'Bosh sahifa';
+    protected static ?string $navigationLabel = 'Statistika';
 
-    protected static ?int $navigationSort = 0;
+    protected static string|UnitEnum|null $navigationGroup = 'Tizim';
+
+    protected static ?int $navigationSort = 1;
 
     public function getWidgets(): array
     {

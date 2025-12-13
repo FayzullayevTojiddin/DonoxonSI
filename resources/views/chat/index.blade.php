@@ -658,13 +658,13 @@
           <option value="">Tashkilotni tanlang</option>
 
           @php
-              use App\Enums\RequestType;
-              $requestTypes = RequestType::toArray();
+              use App\Enums\UserRole;
+              $roles = UserRole::toArray();
           @endphp
 
-          @foreach ($requestTypes as $type)
-            <option value="{{ $type['value'] }}">
-              {{ $type['label'] }}
+          @foreach ($roles as $role)
+            <option value="{{ $role['value'] }}">
+              {{ $role['label'] }}
             </option>
           @endforeach
 

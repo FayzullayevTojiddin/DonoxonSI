@@ -16,6 +16,12 @@ use Filament\Tables\Table;
 
 class DataResource extends Resource
 {
+    public static function canViewAny(): bool
+    {
+        $user = auth()->user();
+        return $user->role->value === 'super_admin';
+    }
+    
     protected static ?string $model = Data::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::CodeBracketSquare;

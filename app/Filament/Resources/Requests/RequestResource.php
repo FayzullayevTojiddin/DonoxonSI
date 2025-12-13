@@ -13,9 +13,27 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use App\Models\Request as RequestModel;
+use Illuminate\Database\Eloquent\Builder;
+use App\Enums\UserRole;
 
 class RequestResource extends Resource
 {
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->role === UserRole::SUPER_ADMIN) {
+            return $query;
+        }
+
+        return $query->where('where', $user->role->value);
+    }
+
     protected static ?string $model = RequestModel::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleLeftRight;    
@@ -26,11 +44,23 @@ class RequestResource extends Resource
 
     protected static ?string $pluralModelLabel = "So'rovlar";
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 0;
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('readed', false)->count();
+        $user = auth()->user();
+
+        if (! $user) {
+            return null;
+        }
+
+        $query = static::getModel()::where('readed', false);
+
+        if ($user->role !== UserRole::SUPER_ADMIN) {
+            $query->where('where', $user->role->value);
+        }
+
+        return (string) $query->count();
     }
 
     public static function getNavigationBadgeColor(): ?string

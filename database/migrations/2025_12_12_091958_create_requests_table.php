@@ -13,6 +13,7 @@ return new class extends Migration
             $table->boolean('readed')->default(false);
             $table->string('full_name');
             $table->text('request');
+            $table->string('where');
             $table->json('details_from')->nullable();
             $table->timestamps();
         });

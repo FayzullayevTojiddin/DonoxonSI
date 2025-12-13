@@ -18,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Enums\UserRole;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -54,5 +55,20 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+    }
+
+    protected function redirectByRole(): string
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return route('filament.admin.auth.login');
+        }
+
+        if ($user->role->value === UserRole::SUPER_ADMIN) {
+            return route('filament.admin.pages.dashboard');
+        }
+
+        return route('filament.admin.resources.requests.index');
     }
 }

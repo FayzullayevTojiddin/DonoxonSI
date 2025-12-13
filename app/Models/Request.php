@@ -11,6 +11,7 @@ class Request extends Model
         'full_name',
         'request',
         'details_from',
+        'where'
     ];
 
     protected $casts = [

@@ -8,7 +8,7 @@ use App\Models\Data;
 use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
-use App\Enums\RequestType;
+use App\Enums\UserRole;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -18,7 +18,7 @@ class ChatController extends Controller
     public function index()
     {
         return view('chat.index', [
-            'requestTypes' => RequestType::toArray(),
+            'userRoles' => UserRole::toArray(),
         ]);
     }
 
@@ -59,7 +59,7 @@ class ChatController extends Controller
             $validated = $request->validate([
                 'full_name'    => 'required|string|max:255',
                 'phone_number' => 'required|string|max:20',
-                'organization' => ['required', new Enum(RequestType::class)],
+                'organization' => ['required', new Enum(UserRole::class)],
                 'request'      => 'required|string|max:5000',
             ], [
                 'full_name.required'    => 'Ism-familiyangizni kiriting',
@@ -79,14 +79,10 @@ class ChatController extends Controller
                 'full_name' => $validated['full_name'],
                 'request'   => $validated['request'],
                 'readed'    => false,
-
+                'where' => UserRole::from($validated['organization'])->value,
                 'details_from' => [
                     'phone_number' => $validated['phone_number'],
                     'organization' => $validated['organization'],
-                    'organization_label' => RequestType::from(
-                        $validated['organization']
-                    )->label(),
-
                     'ip'           => $request->ip(),
                     'user_agent'   => $request->userAgent(),
                     'submitted_at' => now()->toDateTimeString(),
