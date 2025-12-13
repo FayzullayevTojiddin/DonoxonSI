@@ -74,33 +74,49 @@ class RequestsTable
             ->recordActions([
                 ViewAction::make()
                     ->button()
-                    ->label("Ko'rish")
+                    ->label("Ko‘rish")
                     ->icon('heroicon-o-eye')
                     ->modalWidth('3xl')
                     ->infolist([
+
                         TextEntry::make('full_name')
                             ->label("F.I.Sh"),
 
                         TextEntry::make('request')
-                            ->label("So'rov")
+                            ->label("So‘rov")
                             ->columnSpanFull(),
 
                         IconEntry::make('readed')
-                            ->label("O'qilgan"),
+                            ->label("O‘qilgan")
+                            ->boolean(),
 
-                        Section::make("Yuborilgan ma'lumotlar")
+                        Section::make("Yuborilgan ma’lumotlar")
                             ->schema([
+
+                                TextEntry::make('details_from.organization_label')
+                                    ->label("Tashkilot bo‘limi")
+                                    ->badge()
+                                    ->color('warning'),
+
+                                TextEntry::make('details_from.phone_number')
+                                    ->label("Telefon raqam"),
+
                                 TextEntry::make('details_from.ip')
-                                    ->label("IP manzil"),
+                                    ->label("IP manzil")
+                                    ->copyable(),
 
                                 TextEntry::make('details_from.submitted_at')
-                                    ->label("Yuborilgan vaqt"),
+                                    ->label("Yuborilgan vaqt")
+                                    ->dateTime('d.m.Y H:i'),
 
                                 TextEntry::make('details_from.user_agent')
-                                    ->label("Brauzer ma'lumoti")
-                                    ->columnSpanFull(),
-                            ]),
+                                    ->label("Brauzer ma’lumoti")
+                                    ->columnSpanFull()
+                                    ->wrap(),
+                            ])
+                            ->columns(2),
                     ])
+
                     ->mountUsing(function ($record) {
                         if (! $record->readed) {
                             $record->update(['readed' => true]);

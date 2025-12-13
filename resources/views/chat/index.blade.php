@@ -40,7 +40,7 @@
       --border: rgba(0,0,0,0.1);
       --shadow: rgba(0,0,0,0.1);
     }
-    html,body{height:100%}
+    html,body{height:100%;overflow:hidden}
     body{
       background: var(--bg-primary);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Arial, sans-serif;
@@ -62,6 +62,7 @@
       background: var(--bg-secondary);
       border-bottom:1px solid var(--border);
       box-shadow:0 2px 8px var(--shadow);
+      flex-shrink:0;
     }
     .header-left{
       display:flex;
@@ -350,6 +351,14 @@
       transition:all 0.3s ease;
       font-family:inherit;
     }
+    select.form-input{
+      cursor:pointer;
+      appearance:none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right 16px center;
+      padding-right:40px;
+    }
     .form-input::placeholder, .form-textarea::placeholder{
       color: var(--text-muted);
     }
@@ -424,14 +433,14 @@
       flex-direction:column;
       overflow:hidden;
       background: var(--bg-primary);
-      position: relative;
+      min-height:0;
     }
-
     .messages{
       flex:1;
       padding:24px;
-      padding-bottom:100px;
+      padding-bottom:20px;
       overflow-y:auto;
+      overflow-x:hidden;
       display:flex;
       flex-direction:column;
       gap:16px;
@@ -510,6 +519,7 @@
       background: var(--bg-secondary);
       border-top:1px solid var(--border);
       box-shadow:0 -2px 8px var(--shadow);
+      flex-shrink:0;
     }
     .input-wrapper{
       flex:1;
@@ -547,6 +557,7 @@
       justify-content:center;
       box-shadow:0 4px 16px rgba(217,119,6,0.3);
       transition:all 0.3s ease;
+      flex-shrink:0;
     }
     .send-btn:hover{
       transform:translateY(-2px) scale(1.05);
@@ -571,7 +582,7 @@
       .request-btn, .theme-toggle{width:42px;height:42px}
       .request-btn svg, .theme-toggle svg{width:20px;height:20px}
       
-      .messages{padding:16px;gap:12px}
+      .messages{padding:16px;padding-bottom:16px;gap:12px}
       
       .msg{max-width:85%}
       
@@ -596,6 +607,7 @@
       .msg{max-width:90%}
       .bubble{padding:10px 14px;font-size:14px}
       .modal{padding:20px}
+      .composer{padding:12px}
     }
   </style>
 </head>
@@ -633,6 +645,30 @@
       <div class="form-group">
         <label class="form-label">Ism-Familiya</label>
         <input type="text" class="form-input" id="fullName" placeholder="Masalan: Alisher Navoiy" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Telefon raqam</label>
+        <input type="tel" class="form-input" id="phoneNumber" placeholder="+998 90 123 45 67" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Tashkilot bo‘limi</label>
+        <select class="form-input" id="organization" required>
+          <option value="">Tashkilotni tanlang</option>
+
+          @php
+              use App\Enums\RequestType;
+              $requestTypes = RequestType::toArray();
+          @endphp
+
+          @foreach ($requestTypes as $type)
+            <option value="{{ $type['value'] }}">
+              {{ $type['label'] }}
+            </option>
+          @endforeach
+
+        </select>
       </div>
       
       <div class="form-group">
@@ -741,7 +777,7 @@
   const requestTextInput = document.getElementById('requestText');
   const alertContainer = document.getElementById('alertContainer');
   const submitBtn = document.getElementById('submitBtn');
-  const requestRoute = '/chat/submit-request'; // Laravel route
+  const requestRoute = '/chat/submit-request';
   
   // Theme management
   const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -821,10 +857,16 @@
     e.preventDefault();
     clearAlert();
     
+
+    const phoneNumberInput = document.getElementById('phoneNumber');
+    const organizationInput = document.getElementById('organization');
+
     const fullName = fullNameInput.value.trim();
+    const phoneNumber = phoneNumberInput.value.trim();
+    const organization = organizationInput.value;
     const requestText = requestTextInput.value.trim();
     
-    if (!fullName || !requestText) {
+    if (!fullName || !phoneNumber || !organization || !requestText) {
       showAlert('Iltimos, barcha maydonlarni to\'ldiring', 'error');
       return;
     }
@@ -846,6 +888,8 @@
         },
         body: JSON.stringify({
           full_name: fullName,
+          phone_number: phoneNumber,
+          organization: organization,
           request: requestText
         })
       });

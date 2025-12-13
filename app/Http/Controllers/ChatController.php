@@ -8,12 +8,17 @@ use App\Models\Data;
 use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use App\Enums\RequestType;
+use Illuminate\Validation\Rules\Enum;
 
 class ChatController extends Controller
 {
+
     public function index()
     {
-        return view('chat.index');
+        return view('chat.index', [
+            'requestTypes' => RequestType::toArray(),
+        ]);
     }
 
     public function message(Request $request)
@@ -37,41 +42,58 @@ class ChatController extends Controller
     {
         try {
             $validated = $request->validate([
-                'full_name' => 'required|string|max:255',
-                'request' => 'required|string|max:5000',
+                'full_name'    => 'required|string|max:255',
+                'phone_number' => 'required|string|max:20',
+                'organization' => ['required', new Enum(RequestType::class)],
+                'request'      => 'required|string|max:5000',
             ], [
-                'full_name.required' => 'Ism-familiyangizni kiriting',
-                'full_name.max' => 'Ism-familiya juda uzun',
-                'request.required' => 'Xabar matnini kiriting',
-                'request.max' => 'Xabar juda uzun',
+                'full_name.required'    => 'Ism-familiyangizni kiriting',
+                'full_name.max'         => 'Ism-familiya juda uzun',
+
+                'phone_number.required' => 'Telefon raqamingizni kiriting',
+                'phone_number.max'      => 'Telefon raqam noto‘g‘ri',
+
+                'organization.required' => 'Tashkilotni tanlang',
+                'organization.enum'     => 'Noto‘g‘ri tashkilot tanlandi',
+
+                'request.required'      => 'Xabar matnini kiriting',
+                'request.max'           => 'Xabar juda uzun',
             ]);
 
-            $requestModel = RequestModel::create([
+            RequestModel::create([
                 'full_name' => $validated['full_name'],
-                'request' => $validated['request'],
-                'readed' => false,
+                'request'   => $validated['request'],
+                'readed'    => false,
+
                 'details_from' => [
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
+                    'phone_number' => $validated['phone_number'],
+                    'organization' => $validated['organization'],
+                    'organization_label' => RequestType::from(
+                        $validated['organization']
+                    )->label(),
+
+                    'ip'           => $request->ip(),
+                    'user_agent'   => $request->userAgent(),
                     'submitted_at' => now()->toDateTimeString(),
                 ],
             ]);
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'So\'rovingiz muvaffaqiyatli yuborildi! Tez orada javob beramiz.',
+                'status'  => 'success',
+                'message' => 'So‘rovingiz muvaffaqiyatli yuborildi! Tez orada javob beramiz.',
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Iltimos, barcha maydonlarni to\'ldiring',
-                'errors' => $e->errors(),
+                'status'  => 'error',
+                'message' => 'Iltimos, barcha maydonlarni to‘g‘ri to‘ldiring',
+                'errors'  => $e->errors(),
             ], 422);
+
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Xatolik yuz berdi. Iltimos, qaytadan urinib ko\'ring.',
+                'status'  => 'error',
+                'message' => 'Xatolik yuz berdi. Iltimos, qaytadan urinib ko‘ring.',
             ], 500);
         }
     }
