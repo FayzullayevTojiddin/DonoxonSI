@@ -115,6 +115,18 @@ class ChatController extends Controller
 
     protected function donoxonReply(string $text): string
     {
+        $key = 'donoxon-chat:' . request()->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 20)) {
+            $seconds = RateLimiter::availableIn($key);
+
+            return "❌ Juda ko‘p so‘rov yubordingiz. Iltimos "
+                . ceil($seconds / 60)
+                . " daqiqadan keyin yana urinib ko‘ring.";
+        }
+
+        RateLimiter::hit($key, 300);
+
         try {
             if (mb_strlen($text) < 2) {
                 return "Iltimos, savolni biroz batafsilroq yozing 🙂";
