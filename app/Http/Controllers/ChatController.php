@@ -206,35 +206,56 @@ class ChatController extends Controller
     }
 
     private function buildPrompt(string $text, $intents): string
-    {
-        return 
-    "VAZIFA: Foydalanuvchi savolini tahlil qiling va ENG MOS intentni aniqlang.
+{
+    return
+"VAZIFA:
+Foydalanuvchi savolini tahlil qiling va FAQAT ENG TO‘G‘RI intentni tanlang.
 
-    MUHIM QOIDALAR:
-    1️⃣ Agar savolda FAQAT salomlashuv bo‘lsa → 'Salom' intent
-    2️⃣ Agar salom + real savol bo‘lsa → salomni inkor qil, savolni tahlil qil
-    3️⃣ Uzun tumani bilan bog‘liq savollar → mos intent
-    4️⃣ Boshqa tuman/shahar → id = null
-    5️⃣ Hech qaysi intent ma’nosiga mos kelmasa → Javob topilmadi intent
-    6️⃣ So‘z emas, SAVOL MA’NOSI muhim
+MUHIM QOIDALAR:
 
-    FOYDALANUVCHI SAVOLI:
-    \"{$text}\"
+1️⃣ Agar savolda FAQAT salomlashuv bo‘lsa → 'Salom' intentni tanlang.
 
-    INTENTLAR RO'YXATI:
-    ".json_encode(
-        $intents->map(fn ($i) => [
-            'id' => $i->id,
-            'nom' => $i->key,
-            'tavsif' => mb_substr($i->value, 0, 120)
-        ])->toArray(),
-        JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
-    )."
+2️⃣ Agar salomlashuv bilan birga REAL SAVOL bo‘lsa
+   → salomni inkor qiling va savol ma’nosini tahlil qiling.
 
-    JAVOB FORMATI (faqat JSON):
-    {
-    \"id\": <intent_id yoki null>,
-    \"confidence\": <0.0 dan 1.0 gacha>
-    }";
-    }
+3️⃣ Intent FAQAT quyidagi holatda tanlanadi:
+   - savolda so‘ralgan SHAXS / LAVOZIM / XIZMAT
+     intent tavsifiga TO‘LIQ va ANIQ mos kelsa.
+
+4️⃣ Taxmin qilish, yaqin ma’noni moslashtirish,
+   umumiy lavozimni boshqa lavozimga tenglashtirish QAT’IYAN TAQIQLANADI.
+
+5️⃣ Agar savol Uzun tumani bilan bog‘liq bo‘lsa,
+   lekin hech qaysi intent ANIQ mos kelmasa
+   → 'Javob topilmaganda' key li intentni tanlang.
+
+6️⃣ Agar savol Uzun tumani bilan bog‘liq BO‘LMASA
+   (masalan: Toshkent, Termiz va boshqalar)
+   → id = null qaytaring.
+
+7️⃣ Agar bir nechta intent o‘xshash tuyulsa,
+   lekin hech biri to‘liq mos kelmasa
+   → 'Javob topilmaganda' intentni tanlang.
+
+8️⃣ So‘zlar emas, SAVOLNING ANIQ MAQSADI muhim.
+
+FOYDALANUVCHI SAVOLI:
+\"{$text}\"
+
+INTENTLAR RO‘YXATI:
+".json_encode(
+    $intents->map(fn ($i) => [
+        'id' => $i->id,
+        'key' => $i->key,
+        'tavsif' => mb_substr($i->value, 0, 160)
+    ])->toArray(),
+    JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+)."
+
+JAVOB FORMATI (faqat JSON):
+{
+  \"id\": <intent_id yoki null>,
+  \"confidence\": <0.0 dan 1.0 gacha>
+}";
+}
 }
