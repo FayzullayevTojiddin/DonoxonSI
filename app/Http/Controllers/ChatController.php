@@ -43,7 +43,7 @@ class ChatController extends Controller
     {
         $key = 'submit-request:' . $request->ip();
 
-        if (RateLimiter::tooManyAttempts($key, 10)) {
+        if (RateLimiter::tooManyAttempts($key, 3)) {
 
             $seconds = RateLimiter::availableIn($key);
 
@@ -53,7 +53,7 @@ class ChatController extends Controller
                             ceil($seconds / 60) . " daqiqadan keyin urinib ko‘ring.",
             ], 429);
         }
-        RateLimiter::hit($key, 300);
+        RateLimiter::hit($key, 60*60);
 
         try {
             $validated = $request->validate([
