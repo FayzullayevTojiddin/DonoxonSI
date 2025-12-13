@@ -424,10 +424,13 @@
       flex-direction:column;
       overflow:hidden;
       background: var(--bg-primary);
+      position: relative;
     }
+
     .messages{
       flex:1;
       padding:24px;
+      padding-bottom:100px;
       overflow-y:auto;
       display:flex;
       flex-direction:column;
