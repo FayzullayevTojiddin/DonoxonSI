@@ -7,7 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
 
 class NotFoundDataTable
 {
@@ -40,7 +40,7 @@ class NotFoundDataTable
                 //
             ])
             ->recordActions([
-                ViewAction::make()->label("Ko'rish"),
+                EditAction::make()->label("Tahrirlash"),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
