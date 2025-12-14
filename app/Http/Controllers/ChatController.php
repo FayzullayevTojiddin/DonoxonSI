@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Enums\UserRole;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Models\NotFoundData;
 
 class ChatController extends Controller
 {
@@ -187,6 +188,19 @@ class ChatController extends Controller
 
             if ($confidence < 0.35) {
                 return "Kechirasiz, aniq ma'lumot topilmadi.";
+            }
+
+            if($intentId === 39) {
+                NotFoundData::firstOrCreate(
+                    ['intent' => trim(mb_strtolower($text))],
+                        [
+                            'details_from' => [
+                                'ip' => request()->ip(),
+                                'user_agent' => request()->userAgent(),
+                                'asked_at' => now(),
+                            ],
+                        ]
+                    );
             }
 
             $item = Data::find($intentId);
