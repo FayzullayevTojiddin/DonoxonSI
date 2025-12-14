@@ -186,10 +186,6 @@ class ChatController extends Controller
                 return "Men faqat Uzun tumani doirasidagi savollarga javob bera olaman.";
             }
 
-            if ($confidence < 0.35) {
-                return "Kechirasiz, aniq ma'lumot topilmadi.";
-            }
-
             if($intentId === 39) {
                 NotFoundData::firstOrCreate(
                     ['intent' => trim(mb_strtolower($text))],
