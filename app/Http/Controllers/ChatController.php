@@ -218,67 +218,39 @@ class ChatController extends Controller
 {
     return
 "VAZIFA:
-Foydalanuvchi savolini tahlil qiling va FAQAT 100% TO‘LIQ VA ANIQLIK BILAN MOS KELADIGAN BITTA intentni tanlang.
-Agar 100% aniqlik BO‘LMASA — HECH QACHON intent tanlamang.
+Foydalanuvchi savoliga mos intentni ANIQLIK bilan tanlang.
 
-BU AI FAQAT QAT’IY MANTIQ BILAN ISHLAYDI.
-UMUMLASHTIRISH, TAXMIN QILISH, YAQIN MA’NO QAT’IYAN TAQIQLANADI.
+QOIDALAR:
 
-──────────────── QAT’IY QOIDALAR ────────────────
+1️⃣ Agar savol Uzun tumani bilan bog‘liq bo‘lsa
+   va savolda:
+   - aniq LAVOZIM
+   - yoki aniq BO‘LIM / TASHKILOT
+   so‘ralgan bo‘lsa
+   → mos intentni tanlang.
 
-1️⃣ Agar savolda FAQAT salomlashuv bo‘lsa
-→ FAOL intent: 'Salom'
+2️⃣ LAVOZIM va BO‘LIM tushunchalari FARQLANADI:
+   - \"ichki ishlar boshlig‘i\" → lavozim
+   - \"ichki ishlar bo‘limi\" → tashkilot
 
-2️⃣ Agar savolda salomlashuv + real savol bo‘lsa
-→ salomlashuvni BUTUNLAY INKOR QILING
-→ faqat real savolni tahlil qiling
+3️⃣ Agar savolda:
+   - \"haqida ma’lumot\"
+   - \"nima bilan shug‘ullanadi\"
+   - \"vazifalari\"
+   kabi so‘zlar bo‘lsa
+   → bu UMUMIY MA’LUMOT so‘rovi hisoblanadi.
 
-3️⃣ Intent FAQAT quyidagi SHARTLAR BARCHASI bajarilgandagina tanlanadi:
-   ✔ Savolda ANIQ lavozim nomi OCHIQ aytilgan
-   ✔ Lavozim intentdagi lavozim bilan SO‘ZMA-SO‘Z mos
-   ✔ Hech qanday umumiylik yoki keng talqin YO‘Q
+4️⃣ Agar savol Uzun tumani bilan bog‘liq,
+   lekin RO‘YXATDAGI intentlardan hech biri mos kelmasa
+   → 'Javob topilmaganda' intentni tanlang.
 
-4️⃣ QAT’IYAN TAQIQLANADI:
-   ❌ Lavozimni umumiy ma’noda talqin qilish
-   ❌ “Boshliq”, “rahbar”, “mas’ul” kabi so‘zlarni
-      hokim, direktor yoki boshqa lavozimlarga tenglashtirish
-   ❌ Bir lavozimni boshqa lavozim o‘rniga qo‘yish
+5️⃣ Agar savol Uzun tumani bilan bog‘liq EMAS
+   → id = null.
 
-5️⃣ LAVOZIMLAR BIR-BIRIGA TENG EMAS (ESLAB QOL):
-   - Hokim ≠ Ichki ishlar boshlig‘i
-   - Ichki ishlar boshlig‘i ≠ prokuror
-   - Hokim ≠ bo‘lim boshlig‘i
-   - Rahbar so‘zi ANIQ lavozim EMAS
-
-6️⃣ Agar savolda:
-   - \"Ichki ishlar boshlig‘i\" so‘zi bo‘lsa
-   → FAQAT shu lavozimga MOS intent tanlanadi
-   → Hokim, rahbar yoki boshqa lavozim QAT’IYAN tanlanmaydi
-
-7️⃣ Agar savol Uzun tumani bilan bog‘liq bo‘lsa,
-   lekin RO‘YXATDAGI intentlardan BIRORTASI HAM 100% MOS KELMASA
-   → MAJBURAN 'Javob topilmaganda' key li intentni tanlang
-
-8️⃣ Agar savol Uzun tumani bilan bog‘liq BO‘LMASA
-   (Toshkent, Termiz, boshqa hududlar)
-   → id = null qaytaring
-
-9️⃣ Agar savolda lavozim:
-   - noaniq
-   - umumiy
-   - qisqartirilgan
-   - chalkash
-   bo‘lsa
-   → 'Javob topilmaganda' intentni tanlang
-
-10️⃣ ASOSIY QOIDA:
-   → 100% aniqlik = intent bor
-   → 99% yoki kamroq = intent YO‘Q
-
-──────────────── FOYDALANUVCHI SAVOLI ────────────────
+FOYDALANUVCHI SAVOLI:
 \"{$text}\"
 
-──────────────── INTENTLAR RO‘YXATI ────────────────
+INTENTLAR:
 ".json_encode(
         $intents->map(fn ($i) => [
             'id' => $i->id,
@@ -287,17 +259,11 @@ UMUMLASHTIRISH, TAXMIN QILISH, YAQIN MA’NO QAT’IYAN TAQIQLANADI.
         JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
     )."
 
-──────────────── JAVOB FORMATI ────────────────
-FAQAT JSON. HECH QANDAY IZOH YO‘Q.
-
+JAVOB FORMATI (FAQAT JSON):
 {
-  \"id\": <faqat 100% mos kelsa intent_id, aks holda null yoki 'Javob topilmaganda'>,
+  \"id\": <intent_id | 'Javob topilmaganda' | null>,
   \"confidence\": <1.0 yoki 0.0>
 }
-
-ESLATMA:
-- Intent tanlansa → confidence = 1.0
-- Intent tanlanmasa → confidence = 0.0
 ";
 }
 }
