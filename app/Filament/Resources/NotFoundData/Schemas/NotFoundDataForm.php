@@ -18,8 +18,7 @@ class NotFoundDataForm
                 ->dehydrated(false),
 
             Toggle::make('status')
-                ->label('Holati')
-                ->dehydrated(false),
+                ->label('Holati'),
 
             TextInput::make('details_from.ip')
                 ->label('IP manzil')
