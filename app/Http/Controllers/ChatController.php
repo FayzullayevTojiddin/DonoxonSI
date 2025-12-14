@@ -218,56 +218,74 @@ class ChatController extends Controller
         }
     }
 
-    private function buildPrompt(string $text, $intents): string
+   private function buildPrompt(string $text, $intents): string
 {
     return
 "VAZIFA:
-Foydalanuvchi savolini tahlil qiling va FAQAT ENG TO‘G‘RI intentni tanlang.
+Foydalanuvchi savolini tahlil qiling va FAQAT 100% TO‘LIQ MOS KELADIGAN intentni tanlang.
+Agar 100% aniq moslik BO‘LMASA — HECH QACHON intent tanlamang.
 
-MUHIM QOIDALAR:
+BU AI FAQAT ANIQLIK BILAN ISHLAYDI. TAXMIN QILISH TAQIQLANADI.
 
-1️⃣ Agar savolda FAQAT salomlashuv bo‘lsa → 'Salom' intentni tanlang.
+QAT’IY QOIDALAR:
 
-2️⃣ Agar salomlashuv bilan birga REAL SAVOL bo‘lsa
-   → salomni inkor qiling va savol ma’nosini tahlil qiling.
+1️⃣ Agar savolda FAQAT salomlashuv bo‘lsa
+   → 'Salom' intentni tanlang.
+
+2️⃣ Agar savolda salomlashuv + real savol bo‘lsa
+   → salomni BUTUNLAY inkor qiling, faqat savol ma’nosini tahlil qiling.
 
 3️⃣ Intent FAQAT quyidagi holatda tanlanadi:
-   - savolda so‘ralgan SHAXS / LAVOZIM / XIZMAT
-     intent tavsifiga TO‘LIQ va ANIQ mos kelsa.
+   - Savolda aniq SHAXS, LAVOZIM yoki XIZMAT nomi BOR
+   - Savoldagi mazmun intent tavsifiga 100% TO‘LIQ MOS
+   - Hech qanday umumiylik, taxmin, yaqin ma’no YO‘Q
 
-4️⃣ Taxmin qilish, yaqin ma’noni moslashtirish,
-   umumiy lavozimni boshqa lavozimga tenglashtirish QAT’IYAN TAQIQLANADI.
+4️⃣ QAT’IYAN TAQIQLANADI:
+   - Taxmin qilish
+   - “Shunga o‘xshaydi” deb tanlash
+   - Umumiy lavozimni aniq lavozimga tenglashtirish
+   - Qisman moslik asosida intent tanlash
 
 5️⃣ Agar savol Uzun tumani bilan bog‘liq bo‘lsa,
-   lekin hech qaysi intent ANIQ mos kelmasa
-   → 'Javob topilmaganda' key li intentni tanlang.
+   lekin RO‘YXATDAGI intentlardan BIRORTASI HAM 100% MOS KELMASA
+   → MAJBURAN 'Javob topilmaganda' key li intentni tanlang.
 
 6️⃣ Agar savol Uzun tumani bilan bog‘liq BO‘LMASA
-   (masalan: Toshkent, Termiz va boshqalar)
+   (masalan: Toshkent, Termiz, boshqa tuman/shahar)
    → id = null qaytaring.
 
-7️⃣ Agar bir nechta intent o‘xshash tuyulsa,
-   lekin hech biri to‘liq mos kelmasa
+7️⃣ Agar savolda aniq lavozim nomi aytilmagan bo‘lsa
+   yoki lavozim noaniq, umumiy, chalkash bo‘lsa
    → 'Javob topilmaganda' intentni tanlang.
 
-8️⃣ So‘zlar emas, SAVOLNING ANIQ MAQSADI muhim.
+8️⃣ FAQAT to‘liq mos kelgan lavozim haqida javob beriladi.
+   Noto‘g‘ri yoki noaniq moslikda JAVOB BERISH QAT’IYAN TAQIQLANADI.
+
+9️⃣ Asosiy mezon:
+   → 100% ANIQLIK = intent tanlanadi
+   → 99% yoki kamroq = 'Javob topilmaganda'
 
 FOYDALANUVCHI SAVOLI:
 \"{$text}\"
 
 INTENTLAR RO‘YXATI:
 ".json_encode(
-    $intents->map(fn ($i) => [
-        'id' => $i->id,
-        'key' => $i->key,
-    ])->toArray(),
-    JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
-)."
+        $intents->map(fn ($i) => [
+            'id' => $i->id,
+            'key' => $i->key,
+        ])->toArray(),
+        JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+    )."
 
-JAVOB FORMATI (faqat JSON):
+JAVOB FORMATI (FAQAT JSON, HECH QANDAY IZOH YO‘Q):
 {
-  \"id\": <intent_id yoki null>,
-  \"confidence\": <0.0 dan 1.0 gacha>
-}";
+  \"id\": <faqat 100% mos kelganda intent_id, aks holda null yoki 'Javob topilmaganda'>,
+  \"confidence\": <faqat 1.0 yoki 0.0>
+}
+
+ESLATMA:
+- Agar intent tanlansa → confidence = 1.0
+- Agar tanlanmasa → confidence = 0.0
+";
 }
 }
