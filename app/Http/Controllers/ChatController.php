@@ -214,57 +214,71 @@ class ChatController extends Controller
         }
     }
 
-   private function buildPrompt(string $text, $intents): string
+  private function buildPrompt(string $text, $intents): string
 {
     return
 "VAZIFA:
-Foydalanuvchi savolini tahlil qiling va FAQAT 100% TO‘LIQ MOS KELADIGAN intentni tanlang.
-Agar 100% aniq moslik BO‘LMASA — HECH QACHON intent tanlamang.
+Foydalanuvchi savolini tahlil qiling va FAQAT 100% TO‘LIQ VA ANIQLIK BILAN MOS KELADIGAN BITTA intentni tanlang.
+Agar 100% aniqlik BO‘LMASA — HECH QACHON intent tanlamang.
 
-BU AI FAQAT ANIQLIK BILAN ISHLAYDI. TAXMIN QILISH TAQIQLANADI.
+BU AI FAQAT QAT’IY MANTIQ BILAN ISHLAYDI.
+UMUMLASHTIRISH, TAXMIN QILISH, YAQIN MA’NO QAT’IYAN TAQIQLANADI.
 
-QAT’IY QOIDALAR:
+──────────────── QAT’IY QOIDALAR ────────────────
 
 1️⃣ Agar savolda FAQAT salomlashuv bo‘lsa
-   → 'Salom' intentni tanlang.
+→ FAOL intent: 'Salom'
 
 2️⃣ Agar savolda salomlashuv + real savol bo‘lsa
-   → salomni BUTUNLAY inkor qiling, faqat savol ma’nosini tahlil qiling.
+→ salomlashuvni BUTUNLAY INKOR QILING
+→ faqat real savolni tahlil qiling
 
-3️⃣ Intent FAQAT quyidagi holatda tanlanadi:
-   - Savolda aniq SHAXS, LAVOZIM yoki XIZMAT nomi BOR
-   - Savoldagi mazmun intent tavsifiga 100% TO‘LIQ MOS
-   - Hech qanday umumiylik, taxmin, yaqin ma’no YO‘Q
+3️⃣ Intent FAQAT quyidagi SHARTLAR BARCHASI bajarilgandagina tanlanadi:
+   ✔ Savolda ANIQ lavozim nomi OCHIQ aytilgan
+   ✔ Lavozim intentdagi lavozim bilan SO‘ZMA-SO‘Z mos
+   ✔ Hech qanday umumiylik yoki keng talqin YO‘Q
 
 4️⃣ QAT’IYAN TAQIQLANADI:
-   - Taxmin qilish
-   - “Shunga o‘xshaydi” deb tanlash
-   - Umumiy lavozimni aniq lavozimga tenglashtirish
-   - Qisman moslik asosida intent tanlash
+   ❌ Lavozimni umumiy ma’noda talqin qilish
+   ❌ “Boshliq”, “rahbar”, “mas’ul” kabi so‘zlarni
+      hokim, direktor yoki boshqa lavozimlarga tenglashtirish
+   ❌ Bir lavozimni boshqa lavozim o‘rniga qo‘yish
 
-5️⃣ Agar savol Uzun tumani bilan bog‘liq bo‘lsa,
+5️⃣ LAVOZIMLAR BIR-BIRIGA TENG EMAS (ESLAB QOL):
+   - Hokim ≠ Ichki ishlar boshlig‘i
+   - Ichki ishlar boshlig‘i ≠ prokuror
+   - Hokim ≠ bo‘lim boshlig‘i
+   - Rahbar so‘zi ANIQ lavozim EMAS
+
+6️⃣ Agar savolda:
+   - \"Ichki ishlar boshlig‘i\" so‘zi bo‘lsa
+   → FAQAT shu lavozimga MOS intent tanlanadi
+   → Hokim, rahbar yoki boshqa lavozim QAT’IYAN tanlanmaydi
+
+7️⃣ Agar savol Uzun tumani bilan bog‘liq bo‘lsa,
    lekin RO‘YXATDAGI intentlardan BIRORTASI HAM 100% MOS KELMASA
-   → MAJBURAN 'Javob topilmaganda' key li intentni tanlang.
+   → MAJBURAN 'Javob topilmaganda' key li intentni tanlang
 
-6️⃣ Agar savol Uzun tumani bilan bog‘liq BO‘LMASA
-   (masalan: Toshkent, Termiz, boshqa tuman/shahar)
-   → id = null qaytaring.
+8️⃣ Agar savol Uzun tumani bilan bog‘liq BO‘LMASA
+   (Toshkent, Termiz, boshqa hududlar)
+   → id = null qaytaring
 
-7️⃣ Agar savolda aniq lavozim nomi aytilmagan bo‘lsa
-   yoki lavozim noaniq, umumiy, chalkash bo‘lsa
-   → 'Javob topilmaganda' intentni tanlang.
+9️⃣ Agar savolda lavozim:
+   - noaniq
+   - umumiy
+   - qisqartirilgan
+   - chalkash
+   bo‘lsa
+   → 'Javob topilmaganda' intentni tanlang
 
-8️⃣ FAQAT to‘liq mos kelgan lavozim haqida javob beriladi.
-   Noto‘g‘ri yoki noaniq moslikda JAVOB BERISH QAT’IYAN TAQIQLANADI.
+10️⃣ ASOSIY QOIDA:
+   → 100% aniqlik = intent bor
+   → 99% yoki kamroq = intent YO‘Q
 
-9️⃣ Asosiy mezon:
-   → 100% ANIQLIK = intent tanlanadi
-   → 99% yoki kamroq = 'Javob topilmaganda'
-
-FOYDALANUVCHI SAVOLI:
+──────────────── FOYDALANUVCHI SAVOLI ────────────────
 \"{$text}\"
 
-INTENTLAR RO‘YXATI:
+──────────────── INTENTLAR RO‘YXATI ────────────────
 ".json_encode(
         $intents->map(fn ($i) => [
             'id' => $i->id,
@@ -273,15 +287,17 @@ INTENTLAR RO‘YXATI:
         JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
     )."
 
-JAVOB FORMATI (FAQAT JSON, HECH QANDAY IZOH YO‘Q):
+──────────────── JAVOB FORMATI ────────────────
+FAQAT JSON. HECH QANDAY IZOH YO‘Q.
+
 {
-  \"id\": <faqat 100% mos kelganda intent_id, aks holda null yoki 'Javob topilmaganda'>,
-  \"confidence\": <faqat 1.0 yoki 0.0>
+  \"id\": <faqat 100% mos kelsa intent_id, aks holda null yoki 'Javob topilmaganda'>,
+  \"confidence\": <1.0 yoki 0.0>
 }
 
 ESLATMA:
-- Agar intent tanlansa → confidence = 1.0
-- Agar tanlanmasa → confidence = 0.0
+- Intent tanlansa → confidence = 1.0
+- Intent tanlanmasa → confidence = 0.0
 ";
 }
 }
