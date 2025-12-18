@@ -266,4 +266,120 @@ JAVOB FORMATI (FAQAT JSON):
 }
 ";
 }
+
+    public function VoiceToText(Request $request) {
+        try {
+            $audioFile = $request->file('audio');
+            
+            if (!$audioFile) {
+                return response()->json(['error' => 'Audio fayl topilmadi'], 400);
+            }
+
+            // 1. STT (Speech-to-Text) - Ovozdan matnga
+            $sttResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('UZBEKVOICE_API_KEY'),
+            ])->attach(
+                'file', 
+                file_get_contents($audioFile->getPathname()), 
+                $audioFile->getClientOriginalName()
+            )->post('https://uzbekvoice.ai/api/v1/stt', [
+                'return_offsets' => false,
+                'run_diarization' => false,
+                'language' => 'uz',
+                'blocking' => false,
+            ]);
+
+            if (!$sttResponse->successful()) {
+                \Log::error('STT API xatosi', [
+                    'status' => $sttResponse->status(),
+                    'response' => $sttResponse->json()
+                ]);
+                
+                return response()->json([
+                    'error' => 'Ovozni textga o\'girishda xatolik',
+                    'details' => $sttResponse->json()
+                ], 500);
+            }
+
+            $sttData = $sttResponse->json();
+            
+            // STT response: {"id": "string", "result": {"text": "string"}, "state": "string"}
+            $text = $sttData['result']['text'] ?? '';
+            $text = trim($text);
+
+            if (empty($text)) {
+                \Log::warning('STT bo\'sh text qaytardi', ['stt_data' => $sttData]);
+                return response()->json([
+                    'error' => 'Text tanilmadi', 
+                    'stt_response' => $sttData
+                ], 400);
+            }
+
+            \Log::info('STT natijasi', ['text' => $text]);
+
+            // 2. AI javobi olish
+            $reply = $this->donoxonReply($text);
+            \Log::info('AI javobi', ['reply' => $reply]);
+
+            // 3. TTS (Text-to-Speech) - Matndan ovozga
+            $ttsResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('UZBEKVOICE_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post('https://uzbekvoice.ai/api/v1/tts', [
+                'text' => $reply,
+                'model' => 'lola',
+                'blocking' => false,
+            ]);
+
+            if (!$ttsResponse->successful()) {
+                \Log::error('TTS API xatosi', [
+                    'status' => $ttsResponse->status(),
+                    'response' => $ttsResponse->json()
+                ]);
+                
+                return response()->json([
+                    'success' => true,
+                    'text' => $text,
+                    'reply' => $reply,
+                    'audio_url' => null,
+                    'warning' => 'Ovoz yaratishda xatolik'
+                ]);
+            }
+
+            $ttsData = $ttsResponse->json();
+            
+            // TTS response: {"id": "...", "result": {"url": "..."}, "status": "SUCCESS"}
+            $audioUrl = $ttsData['result']['url'] ?? null;
+
+            if (empty($audioUrl)) {
+                \Log::warning('TTS URL topilmadi', ['tts_data' => $ttsData]);
+                return response()->json([
+                    'success' => true,
+                    'text' => $text,
+                    'reply' => $reply,
+                    'audio_url' => null,
+                    'warning' => 'Ovozli fayl URL i topilmadi'
+                ]);
+            }
+
+            \Log::info('TTS natijasi', ['audio_url' => $audioUrl]);
+
+            return response()->json([
+                'success' => true,
+                'text' => $text,
+                'reply' => $reply,
+                'audio_url' => $audioUrl,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('VoiceToText xatosi', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'error' => 'Server xatosi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

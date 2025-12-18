@@ -4,7 +4,6 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="csrf-token" content="CSRF_TOKEN_HERE">
   <title>DonoxonSI — Uzun tumani yordamchi chat</title>
   <link rel="icon" type="image/png" href="logo.png">
   <style>
@@ -106,6 +105,7 @@
       font-size:22px;
       color:white;
     }
+    
     /* Loader Styles */
     .page-loader{
       position:fixed;
@@ -451,7 +451,6 @@
       flex-direction:column;
       gap:16px;
       scroll-behavior: smooth;
-
       min-height:0;
       -webkit-overflow-scrolling: touch;
     }
@@ -559,7 +558,7 @@
       background: var(--bg-card);
       box-shadow:0 0 0 3px rgba(245,158,11,0.1);
     }
-    .send-btn{
+    .send-btn, .voice-btn{
       min-width:54px;
       height:54px;
       border-radius:14px;
@@ -573,56 +572,177 @@
       transition:all 0.3s ease;
       flex-shrink:0;
     }
-    .send-btn:hover{
+    .send-btn:hover, .voice-btn:hover{
       transform:translateY(-2px) scale(1.05);
       box-shadow:0 6px 20px rgba(217,119,6,0.4);
     }
-    .send-btn:active{
+    .send-btn:active, .voice-btn:active{
       transform:translateY(0) scale(0.98);
     }
-    .send-btn svg{
+    .send-btn svg, .voice-btn svg{
       width:20px;
       height:20px;
     }
-    @media(max-width:768px){
-      .header{padding:12px 16px}
-      
-      .logo{width:42px;height:42px;font-size:20px}
-      .logo-text{font-size:20px}
-      
-      .header-info h1{font-size:18px}
-      .header-info p{font-size:12px}
-      
-      .request-btn, .theme-toggle{width:42px;height:42px}
-      .request-btn svg, .theme-toggle svg{width:20px;height:20px}
-      
-      .messages{padding:16px;padding-bottom:16px;gap:12px}
-      
-      .msg{max-width:85%}
-      
-      .bubble{padding:12px 16px;font-size:14px}
-      
-      .composer{padding:16px;gap:10px}
-      
-      .input{padding:12px 16px;font-size:14px}
-      
-      .send-btn{min-width:48px;height:48px}
-      .send-btn svg{width:18px;height:18px}
-      
-      .modal{padding:24px}
-      .modal-title{font-size:20px}
+    .voice-btn{
+      background: linear-gradient(135deg, #06b6d4, #0891b2);
+      box-shadow:0 4px 16px rgba(8,145,178,0.3);
     }
-    @media(max-width:480px){
-      .header-left{gap:10px}
-      .logo{width:38px;height:38px;font-size:18px}
-      .logo-text{font-size:18px}
-      .header-info h1{font-size:16px}
-      .request-btn, .theme-toggle{width:38px;height:38px}
-      .msg{max-width:90%}
-      .bubble{padding:10px 14px;font-size:14px}
-      .modal{padding:20px}
-      .composer{padding:12px}
+    .voice-btn:hover{
+      box-shadow:0 6px 20px rgba(8,145,178,0.4);
     }
+    .voice-btn.hidden{
+      display:none;
+    }
+    
+    /* Voice Recording Overlay - YANGILANGAN */
+    .voice-overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:2000;
+      animation:fadeIn 0.3s ease;
+    }
+    .voice-overlay.active{
+      display:flex;
+    }
+    
+    .voice-container{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:32px;
+      animation:scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes scaleIn{
+      from{transform:scale(0.8);opacity:0}
+      to{transform:scale(1);opacity:1}
+    }
+    
+    /* Logo with animated ring */
+    .voice-logo-wrapper{
+      position:relative;
+      width:180px;
+      height:180px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    
+    .voice-ring{
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      border:4px solid transparent;
+      transition:all 0.3s ease;
+    }
+    
+    /* Listening state - yashil rang */
+    .voice-ring.listening{
+      border-color:#22c55e;
+      animation:ringPulseListening 2s ease-in-out infinite;
+    }
+    
+    @keyframes ringPulseListening{
+      0%, 100%{
+        transform:scale(1);
+        box-shadow:0 0 0 0 rgba(34,197,94,0.7), 0 0 30px rgba(34,197,94,0.3);
+      }
+      50%{
+        transform:scale(1.1);
+        box-shadow:0 0 0 20px rgba(34,197,94,0), 0 0 50px rgba(34,197,94,0.5);
+      }
+    }
+    
+    /* Speaking state - ko'k rang */
+    .voice-ring.speaking{
+      border-color:#06b6d4;
+      animation:ringPulseSpeaking 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes ringPulseSpeaking{
+      0%, 100%{
+        transform:scale(1);
+        box-shadow:0 0 0 0 rgba(6,182,212,0.7), 0 0 30px rgba(6,182,212,0.3);
+      }
+      50%{
+        transform:scale(1.15);
+        box-shadow:0 0 0 25px rgba(6,182,212,0), 0 0 60px rgba(6,182,212,0.6);
+      }
+    }
+    
+    /* Processing state - qizil rang */
+    .voice-ring.processing{
+      border-color:#f59e0b;
+      animation:ringPulseProcessing 1s linear infinite;
+    }
+    
+    @keyframes ringPulseProcessing{
+      0%{
+        transform:rotate(0deg);
+        box-shadow:0 0 20px rgba(245,158,11,0.5);
+      }
+      100%{
+        transform:rotate(360deg);
+        box-shadow:0 0 20px rgba(245,158,11,0.5);
+      }
+    }
+    
+    .voice-logo{
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:white;
+      box-shadow:0 10px 40px rgba(0,0,0,0.3);
+      position:relative;
+      z-index:2;
+    }
+    
+    .voice-logo img{
+      width:100px;
+      height:100px;
+      object-fit:contain;
+    }
+    
+    /* Close button - X tugma */
+    .voice-close-btn{
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      background:rgba(239,68,68,0.9);
+      border:none;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:all 0.3s ease;
+      box-shadow:0 4px 20px rgba(239,68,68,0.4);
+      backdrop-filter:blur(10px);
+    }
+    
+    .voice-close-btn:hover{
+      transform:scale(1.1);
+      background:#dc2626;
+      box-shadow:0 6px 25px rgba(239,68,68,0.6);
+    }
+    
+    .voice-close-btn:active{
+      transform:scale(0.95);
+    }
+    
+    .voice-close-btn svg{
+      width:28px;
+      height:28px;
+      stroke:white;
+      stroke-width:3;
+    }
+    
     .about-btn{
       width:48px;
       height:48px;
@@ -665,6 +785,55 @@
       padding:2px 6px;
       border-radius:6px;
     }
+    
+    @media(max-width:768px){
+      .header{padding:12px 16px}
+      
+      .logo{width:42px;height:42px;font-size:20px}
+      .logo-text{font-size:20px}
+      
+      .header-info h1{font-size:18px}
+      .header-info p{font-size:12px}
+      
+      .request-btn, .theme-toggle{width:42px;height:42px}
+      .request-btn svg, .theme-toggle svg{width:20px;height:20px}
+      
+      .messages{padding:16px;padding-bottom:16px;gap:12px}
+      
+      .msg{max-width:85%}
+      
+      .bubble{padding:12px 16px;font-size:14px}
+      
+      .composer{padding:16px;gap:10px}
+      
+      .input{padding:12px 16px;font-size:14px}
+      
+      .send-btn, .voice-btn{min-width:48px;height:48px}
+      .send-btn svg, .voice-btn svg{width:18px;height:18px}
+      
+      .modal{padding:24px}
+      .modal-title{font-size:20px}
+      
+      .voice-logo-wrapper{width:150px;height:150px}
+      .voice-logo{width:120px;height:120px}
+      .voice-logo img{width:85px;height:85px}
+      .voice-close-btn{width:56px;height:56px}
+    }
+    @media(max-width:480px){
+      .header-left{gap:10px}
+      .logo{width:38px;height:38px;font-size:18px}
+      .logo-text{font-size:18px}
+      .header-info h1{font-size:16px}
+      .request-btn, .theme-toggle{width:38px;height:38px}
+      .msg{max-width:90%}
+      .bubble{padding:10px 14px;font-size:14px}
+      .modal{padding:20px}
+      .composer{padding:12px}
+      .voice-logo-wrapper{width:130px;height:130px}
+      .voice-logo{width:100px;height:100px}
+      .voice-logo img{width:70px;height:70px}
+      .voice-close-btn{width:50px;height:50px}
+    }
   </style>
 </head>
 <body>
@@ -675,6 +844,25 @@
   </div>
   <span class="loader"></span>
   <div class="loader-text">Yuklanmoqda...</div>
+</div>
+
+<!-- Voice Recording Overlay - YANGILANGAN -->
+<div class="voice-overlay" id="voiceOverlay">
+  <div class="voice-container">
+    <div class="voice-logo-wrapper">
+      <div class="voice-ring" id="voiceRing"></div>
+      <div class="voice-logo">
+        <img src="logo.png" alt="DonoxonSI">
+      </div>
+    </div>
+    
+    <button class="voice-close-btn" id="voiceCloseBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <!-- Request Modal -->
@@ -709,21 +897,12 @@
       </div>
       
       <div class="form-group">
-        <label class="form-label">Tashkilot bo‘limi</label>
+        <label class="form-label">Tashkilot bo'limi</label>
         <select class="form-input" id="organization" required>
           <option value="">Tashkilotni tanlang</option>
-
-          @php
-              use App\Enums\UserRole;
-              $roles = UserRole::toArray();
-          @endphp
-
-          @foreach ($roles as $role)
-            <option value="{{ $role['value'] }}">
-              {{ $role['label'] }}
-            </option>
-          @endforeach
-
+          <option value="hokimiyat">Hokimiyat</option>
+          <option value="tashkilot">Tashkilot</option>
+          <option value="xizmat">Xizmat</option>
         </select>
       </div>
       
@@ -796,7 +975,15 @@
       <div class="input-wrapper">
         <input id="message_input" class="input" type="text" placeholder="Xabar yozing..." autocomplete="off" />
       </div>
-      <button id="sendBtn" class="send-btn" aria-label="Yuborish">
+      <button id="voiceBtn" class="voice-btn" aria-label="Ovozli xabar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
+      <button id="sendBtn" class="send-btn hidden" aria-label="Yuborish">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
           <line x1="22" y1="2" x2="11" y2="13"/>
           <polygon points="22 2 15 22 11 13 2 9 22 2"/>
@@ -828,9 +1015,25 @@
   const messagesEl = document.getElementById('messages');
   const input = document.getElementById('message_input');
   const sendBtn = document.getElementById('sendBtn');
+  const voiceBtn = document.getElementById('voiceBtn');
   const themeToggle = document.getElementById('themeToggle');
   const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   const chatRoute = '/chat/message';
+  
+  // Voice overlay elements - YANGILANGAN
+  const voiceOverlay = document.getElementById('voiceOverlay');
+  const voiceRing = document.getElementById('voiceRing');
+  const voiceCloseBtn = document.getElementById('voiceCloseBtn');
+  
+  // Voice recording state
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let isRecording = false;
+  let silenceTimer = null;
+  let audioContext = null;
+  let analyser = null;
+  let silenceThreshold = -50; // dB
+  let silenceDuration = 2000; // 2 soniya jim turish
   
   // Request modal elements
   const requestModal = document.getElementById('requestModal');
@@ -921,7 +1124,6 @@
     e.preventDefault();
     clearAlert();
     
-
     const phoneNumberInput = document.getElementById('phoneNumber');
     const organizationInput = document.getElementById('organization');
 
@@ -1039,13 +1241,323 @@
   
   sendBtn.onclick = send;
   input.addEventListener("keydown", e => e.key === "Enter" && send());
+  
+  // Toggle send/voice button based on input
+  input.addEventListener('input', () => {
+    const hasText = input.value.trim().length > 0;
+    if (hasText) {
+      voiceBtn.classList.add('hidden');
+      sendBtn.classList.remove('hidden');
+    } else {
+      voiceBtn.classList.remove('hidden');
+      sendBtn.classList.add('hidden');
+    }
+  });
+  
+  // ==================================================
+  // VOICE RECORDING FUNCTIONS - YANGILANGAN
+  // ==================================================
+  
+  // Ovoz balandligini aniqlash funksiyasi
+  function detectSound(stream) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    const microphone = audioContext.createMediaStreamSource(stream);
+    analyser.fftSize = 512;
+    microphone.connect(analyser);
+    
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    
+    function checkSound() {
+      if (!isRecording) return;
+      
+      analyser.getByteFrequencyData(dataArray);
+      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+      const decibels = 20 * Math.log10(average / 255);
+      
+      if (decibels > silenceThreshold) {
+        // Gapirmoqda - timer ni reset qilish
+        clearTimeout(silenceTimer);
+        voiceRing.className = 'voice-ring speaking';
+        silenceTimer = setTimeout(() => {
+          // Jim turdi - yozishni to'xtatish va yuborish
+          stopVoiceRecording();
+        }, silenceDuration);
+      } else {
+        // Jim turmoqda
+        voiceRing.className = 'voice-ring listening';
+      }
+      
+      requestAnimationFrame(checkSound);
+    }
+    
+    checkSound();
+  }
+  
+  // Ovoz yozishni boshlash
+  async function startVoiceRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+      
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        await processVoiceInput(audioBlob);
+        
+        // Stop all tracks
+        stream.getTracks().forEach(track => track.stop());
+        
+        // Cleanup
+        if (audioContext) {
+          audioContext.close();
+          audioContext = null;
+        }
+      };
+      
+      mediaRecorder.start();
+      isRecording = true;
+      
+      // Overlay ni ko'rsatish
+      voiceOverlay.classList.add('active');
+      voiceRing.className = 'voice-ring listening';
+      
+      // Ovoz balandligini aniqlashni boshlash
+      detectSound(stream);
+      
+      // Birinchi silence timer ni boshlash
+      silenceTimer = setTimeout(() => {
+        stopVoiceRecording();
+      }, silenceDuration);
+      
+    } catch (error) {
+      console.error('Mikrofon xatosi:', error);
+      alert('Mikrofondan foydalanish uchun ruxsat bering');
+    }
+  }
+  
+  // Ovoz yozishni to'xtatish va yuborish
+  function stopVoiceRecording() {
+    if (mediaRecorder && isRecording) {
+      clearTimeout(silenceTimer);
+      mediaRecorder.stop();
+      isRecording = false;
+      
+      // Processing holatiga o'tish
+      voiceRing.className = 'voice-ring processing';
+    }
+  }
+  
+  // Ovoz yozishni bekor qilish
+  function cancelVoiceRecording() {
+    if (mediaRecorder && isRecording) {
+      clearTimeout(silenceTimer);
+      mediaRecorder.stop();
+      isRecording = false;
+      audioChunks = [];
+      
+      // Overlay ni yopish
+      voiceOverlay.classList.remove('active');
+      voiceRing.className = 'voice-ring';
+      
+      // Cleanup
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+    } else {
+      voiceOverlay.classList.remove('active');
+    }
+  }
+  
+  async function processVoiceInput(audioBlob) {
+      try {
+          // 1. Speech-to-Text (Audio -> Text) - UzbekVoice API orqali
+          voiceRing.className = 'voice-ring processing';
+          
+          const formData = new FormData();
+          formData.append('audio', audioBlob, 'recording.webm');
+          
+          const sttResponse = await fetch('/voice-to-text', {
+              method: 'POST',
+              headers: {
+                  'X-CSRF-TOKEN': csrf
+              },
+              body: formData
+          });
+          
+          const sttData = await sttResponse.json();
+          
+          if (!sttResponse.ok || !sttData.success) {
+              throw new Error(sttData.error || 'Ovozni matnga o\'girishda xatolik');
+          }
+          
+          const transcribedText = sttData.text;
+          const aiReply = sttData.reply;
+          const audioUrl = sttData.audio_url;
+          
+          if (!transcribedText || transcribedText.trim() === '') {
+              voiceOverlay.classList.remove('active');
+              alert('Ovoz aniqlanmadi. Iltimos, qaytadan urinib ko\'ring');
+              return;
+          }
+          
+          // Overlay ni yopish
+          voiceOverlay.classList.remove('active');
+          
+          // User xabarini ko'rsatish
+          appendUser(transcribedText);
+          
+          // AI javobini ko'rsatish
+          const typingEl = appendTyping();
+          setTimeout(() => {
+              showAI(typingEl, aiReply);
+              
+              // Audio ijro etish
+              if (audioUrl) {
+                  const audio = new Audio(audioUrl);
+                  audio.play().catch(e => console.log('Audio ijro etish xatosi:', e));
+              }
+          }, 600);
+          
+      } catch (error) {
+          console.error('Ovozli xabar xatosi:', error);
+          voiceOverlay.classList.remove('active');
+          
+          const typingEl = appendTyping();
+          showAI(typingEl, 'Ovozli xabar yuborishda xatolik yuz berdi');
+      }
+  }
+  
+  // ==================================================
+  // API FUNCTIONS - Bu funksiyalarni to'ldiring
+  // ==================================================
+  
+  /**
+   * Audio faylni matnga o'girish
+   * @param {Blob} audioBlob - Audio fayl
+   * @returns {Promise<string>} - Matn
+   */
+  async function transcribeAudioAPI(audioBlob) {
+    // TODO: Bu yerga Speech-to-Text API ni ulang
+    // Masalan: Whisper API, Google Speech-to-Text, va h.k.
+    
+    /*
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+    
+    const response = await fetch('/api/speech-to-text', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': csrf
+      },
+      body: formData
+    });
+    
+    const data = await response.json();
+    return data.text;
+    */
+    
+    // Demo uchun:
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('Bu demo matn (API ulanmagan)');
+      }, 2000);
+    });
+  }
+  
+  /**
+   * Matnni AI ga yuborish va javob olish
+   * @param {string} text - User xabari
+   * @returns {Promise<string>} - AI javobi
+   */
+  async function sendToAIChatAPI(text) {
+    // TODO: Bu funksiya allaqachon mavjud /chat/message endpoint dan foydalanadi
+    
+    try {
+      const response = await fetch(chatRoute, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrf
+        },
+        body: JSON.stringify({ message: text })
+      });
+      
+      const data = await response.json();
+      return data?.reply || 'Javob olinmadi';
+    } catch (error) {
+      console.error('Chat API xatosi:', error);
+      return 'Tarmoq xatosi';
+    }
+  }
+  
+  /**
+   * Matnni ovozga o'girish va ijro etish
+   * @param {string} text - O'qish uchun matn
+   * @returns {Promise<void>}
+   */
+  async function textToSpeechAPI(text) {
+    // TODO: Bu yerga Text-to-Speech API ni ulang
+    // Masalan: ElevenLabs, Google TTS, PlayHT va h.k.
+    
+    /*
+    const response = await fetch('/api/text-to-speech', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrf
+      },
+      body: JSON.stringify({ text: text })
+    });
+    
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    
+    return new Promise((resolve, reject) => {
+      audio.onended = resolve;
+      audio.onerror = reject;
+      audio.play();
+    });
+    */
+    
+    // Demo uchun - browser ning Web Speech API
+    if ('speechSynthesis' in window) {
+      return new Promise((resolve) => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'uz-UZ'; // O'zbek tili
+        utterance.onend = resolve;
+        window.speechSynthesis.speak(utterance);
+      });
+    }
+    
+    return Promise.resolve();
+  }
+  
+  // Voice button event listeners
+  voiceBtn.addEventListener('click', startVoiceRecording);
+  voiceCloseBtn.addEventListener('click', cancelVoiceRecording);
+  
+  // Close voice overlay on click
+  voiceOverlay.addEventListener('click', (e) => {
+    if (e.target === voiceOverlay) {
+      cancelVoiceRecording();
+    }
+  });
 
+  // About button
   const aboutBtn = document.getElementById('aboutBtn');
-
   aboutBtn.addEventListener('click', () => {
     window.location.href = '/about';
   });
 
+  // AI xabarini qo'shish
   function appendAI(text){
     const w = document.createElement('div');
     w.className = "msg ai";
@@ -1054,22 +1566,23 @@
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
+  // Welcome message
   window.addEventListener('load', () => {
     if (!sessionStorage.getItem('welcome_shown')) {
       appendAI(
   `Assalomu alaykum 👋
 
-  Men DonoxonSI — Uzun tumani bo‘yicha sun’iy intellekt yordamchiman.
+Men DonoxonSI — Uzun tumani bo'yicha sun'iy intellekt yordamchiman.
 
-  📌 Siz:
-  • hokimiyat
-  • tashkilotlar
-  • xizmatlar
-  • murojaatlar
+📌 Siz:
+• hokimiyat
+• tashkilotlar
+• xizmatlar
+• murojaatlar
 
-  bo‘yicha savol berishingiz mumkin.
+bo'yicha savol berishingiz mumkin.
 
-  Savolingizni yozing 🙂`
+Savolingizni yozing 🙂`
       );
 
       sessionStorage.setItem('welcome_shown', '1');
