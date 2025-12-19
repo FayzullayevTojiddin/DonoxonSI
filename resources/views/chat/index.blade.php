@@ -900,9 +900,16 @@
         <label class="form-label">Tashkilot bo'limi</label>
         <select class="form-input" id="organization" required>
           <option value="">Tashkilotni tanlang</option>
-          <option value="hokimiyat">Hokimiyat</option>
-          <option value="tashkilot">Tashkilot</option>
-          <option value="xizmat">Xizmat</option>
+          @php
+              use App\Enums\UserRole;
+              $roles = UserRole::toArray();
+          @endphp
+
+          @foreach ($roles as $role)
+            <option value="{{ $role['value'] }}">
+              {{ $role['label'] }}
+            </option>
+          @endforeach
         </select>
       </div>
       
