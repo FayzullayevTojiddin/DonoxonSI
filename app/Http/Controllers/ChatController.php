@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Request as RequestModel;
 use App\Models\Data;
-use Gemini\Laravel\Facades\Gemini;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use App\Enums\UserRole;
@@ -167,7 +167,7 @@ class ChatController extends Controller
                 ]);
 
             if (!$response->successful()) {
-                \Log::error('OpenAI API xato: ' . $response->body());
+                Log::error('OpenAI API xato: ' . $response->body());
                 return "Kechirasiz, hozirda javob berishda xatolik yuz berdi.";
             }
 
@@ -209,7 +209,7 @@ class ChatController extends Controller
             return $item->value;
 
         } catch (\Throwable $e) {
-            \Log::error('donoxonReply xato: ' . $e->getMessage());
+            Log::error('donoxonReply xato: ' . $e->getMessage());
             return "Kechirasiz, hozirda javob berishda xatolik yuz berdi.";
         }
     }
@@ -290,7 +290,7 @@ JAVOB FORMATI (FAQAT JSON):
             ]);
 
             if (!$sttResponse->successful()) {
-                \Log::error('STT API xatosi', [
+                Log::error('STT API xatosi', [
                     'status' => $sttResponse->status(),
                     'response' => $sttResponse->json()
                 ]);
@@ -308,18 +308,18 @@ JAVOB FORMATI (FAQAT JSON):
             $text = trim($text);
 
             if (empty($text)) {
-                \Log::warning('STT bo\'sh text qaytardi', ['stt_data' => $sttData]);
+                Log::warning('STT bo\'sh text qaytardi', ['stt_data' => $sttData]);
                 return response()->json([
                     'error' => 'Text tanilmadi', 
                     'stt_response' => $sttData
                 ], 400);
             }
 
-            \Log::info('STT natijasi', ['text' => $text]);
+            Log::info('STT natijasi', ['text' => $text]);
 
             // 2. AI javobi olish
             $reply = $this->donoxonReply($text);
-            \Log::info('AI javobi', ['reply' => $reply]);
+            Log::info('AI javobi', ['reply' => $reply]);
 
             // 3. TTS (Text-to-Speech) - Matndan ovozga
             $ttsResponse = Http::withHeaders([
@@ -332,7 +332,7 @@ JAVOB FORMATI (FAQAT JSON):
             ]);
 
             if (!$ttsResponse->successful()) {
-                \Log::error('TTS API xatosi', [
+                Log::error('TTS API xatosi', [
                     'status' => $ttsResponse->status(),
                     'response' => $ttsResponse->json()
                 ]);
@@ -352,7 +352,7 @@ JAVOB FORMATI (FAQAT JSON):
             $audioUrl = $ttsData['result']['url'] ?? null;
 
             if (empty($audioUrl)) {
-                \Log::warning('TTS URL topilmadi', ['tts_data' => $ttsData]);
+                Log::warning('TTS URL topilmadi', ['tts_data' => $ttsData]);
                 return response()->json([
                     'success' => true,
                     'text' => $text,
@@ -362,7 +362,7 @@ JAVOB FORMATI (FAQAT JSON):
                 ]);
             }
 
-            \Log::info('TTS natijasi', ['audio_url' => $audioUrl]);
+            Log::info('TTS natijasi', ['audio_url' => $audioUrl]);
 
             return response()->json([
                 'success' => true,
@@ -372,7 +372,7 @@ JAVOB FORMATI (FAQAT JSON):
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('VoiceToText xatosi', [
+            Log::error('VoiceToText xatosi', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
